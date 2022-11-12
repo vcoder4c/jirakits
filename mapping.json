@@ -1,0 +1,12 @@
+{
+  "Ticket ID": "key",
+  "Priority": "fields.priority.name",
+  "Status": "fields.status.name",
+  "Reporter": "fields.reporter.emailAddress",
+  "assignee": "fields.assignee.emailAddress",
+  "Issue Type": "fields.issuetype.name",
+  "Summary": "fields.summary",
+  "Epic": "fields.customfield_10001",
+  "Description": "fields.description",
+  "Story Point": "fields.customfield_10100"
+}
