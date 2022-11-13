@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+
+  goreleaser:
+    name: Release a new version
+    needs: [lint]
+    runs-on: ubuntu-latest
+    environment: GoReleaser
+    # This job only runs when
+    # 1. When the previous `lint` job has completed successfully
+    # 2. When the repository is not a fork, i.e. it will only run on the official golang-migrate/migrate
+    # 3. When the workflow is triggered by a tag with `v` prefix
+    if: ${{ success() && github.repository == 'vcoder4c/jirakits' && startsWith(github.ref, 'refs/tags/v') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Go
+      uses: actions/setup-go@v3
+        with:
+          go-version: "1.17.12"
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v3
+        with:
+          # either 'goreleaser' (default) or 'goreleaser-pro'
+          distribution: goreleaser
+          version: latest
+          args: release --rm-dist
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
+            # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
