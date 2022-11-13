@@ -3,11 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/manifoldco/promptui"
 	"github.com/vcoder4c/jirakits/cli"
 	"github.com/vcoder4c/jirakits/common"
 	"github.com/vcoder4c/jirakits/google"
 	"github.com/vcoder4c/jirakits/jira"
-	"github.com/manifoldco/promptui"
 	"google.golang.org/api/sheets/v4"
 )
 
@@ -121,6 +121,9 @@ func fetchIssues(ctx cli.Context) {
 	}
 	queryString := getQueryString()
 	total, err := jira.GetIssuesCount(jiraClient, queryString)
+	if err != nil {
+		exit(err.Error())
+	}
 
 	confirmYes := confirmProceed(total)
 	if !confirmYes {
@@ -131,7 +134,7 @@ func fetchIssues(ctx cli.Context) {
 	if err != nil {
 		exit(err.Error())
 	}
-	var spreadSheet *sheets.Spreadsheet = nil
+	var spreadSheet *sheets.Spreadsheet
 	createNew := isCreatingNew()
 	if createNew {
 		spreadSheetName := getSpreadSheetName()
